@@ -29,9 +29,9 @@ Ondamend is a revolutionary app designed to help individuals with PTSD heal and 
 ---
 
 ## ✨ Features:
-- ** sign in and up** - you can sign in and up to the app.
-- ** Profile page** - you have a profile page.
-- ** Secure & Private ** - your data is secure with us yay.
+- **sign in and up** - you can sign in and up to the app.
+- **Profile page** - you have a profile page.
+- **Secure & Private** - your data is secure with us yay.
 ---
 
 ## 🔮 Future Roadmap
