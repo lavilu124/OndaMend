@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text,  View, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image,  View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Tabs, useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Client, Account } from 'appwrite';
@@ -53,6 +53,8 @@ const RootLayout = () => {
             <Ionicons name="person-circle-outline" size={50} color="#fff" />
           )}
         </TouchableOpacity>
+
+        <Image source={require('../assets/clean.png')} style={styles.logo} />
       </View>
 
       {/* Tabs */}
@@ -99,6 +101,13 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
+  },
+  logo: {
+    width: 100,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    resizeMode: 'contain',
   },
 });
 
