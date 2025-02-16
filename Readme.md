@@ -15,8 +15,8 @@ Ondamend is a revolutionary app designed to help individuals with PTSD heal and 
 ### Steps to Install
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/Ondamend.git
-   cd Ondamend
+   git clone https://github.com/lavilu124/OndaMend.git
+   cd OndaMend
    ```
 2. **Install dependencies**
    ```bash
