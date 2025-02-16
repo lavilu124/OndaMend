@@ -1,41 +1,51 @@
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import React, { useState } from 'react';
-import { Client, Account } from 'react-native-appwrite';
+import { Client, Account, Databases, ID } from 'react-native-appwrite';
 import { useRouter } from 'expo-router';
 import DyInput from '../components/Input';
+import { Picker } from '@react-native-picker/picker';
 
-//client of auth
+// client of auth
 const client = new Client()
   .setProject('675f19af00004a6f0bf8') 
   .setEndpoint('https://cloud.appwrite.io/v1'); 
 
-
-//account of the current user
+// account of the current user
 const account = new Account(client);
+const databases = new Databases(client);
+const databaseId = '679f922800130bce0002';
+const collectionId = '67a8d6a5002264920113';
 
 const Signup = () => {
-  //data needed to sign up
+  // data needed to sign up
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [age, setAge] = useState(12);
+  const [userType, setUserType] = useState('other'); 
   const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
-  //function to handle the sign up
   const handleSignup = async () => {
-    if (!name || !email || !password) {
+    if (!name || !email || !password || !age || !userType) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
 
     setLoading(true);
     try {
-      await account.create('unique()', email, password, name);
-      Alert.alert('Success', 'Account created successfully!');
+      const user = await account.create(ID.unique(), email, password, name);
       await account.createEmailPasswordSession(email, password);
+      await databases.createDocument(databaseId, collectionId, ID.unique(), {
+        userId: user.$id,
+        name,
+        email,
+        age,  
+        userType,
+      });
+      Alert.alert('Success', 'Account created successfully!');
       router.push('/home');
-
     } catch (error) {
       Alert.alert('Signup Failed', error.message || 'An unknown error occurred');
     } finally {
@@ -43,14 +53,12 @@ const Signup = () => {
     }
   };
 
-  //the page view
+  // the page view
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
 
-
-      <DyInput placeholder={"name"} value={name} onChangeText={setName}></DyInput>
-
+      <DyInput placeholder={"Name"} value={name} onChangeText={setName}></DyInput>
       <DyInput placeholder={"Email"} value={email} onChangeText={setEmail} keyboardType={"email-address"}></DyInput>
 
       <TextInput
@@ -61,6 +69,26 @@ const Signup = () => {
         secureTextEntry
       />
 
+      <TextInput
+        style={styles.input}
+        placeholder="Age"
+        value={age}
+        onChangeText={(text) => setAge(Number(text) || 0)}
+        keyboardType="numeric"
+      />
+
+      
+      <Picker
+        selectedValue={userType}
+        onValueChange={(itemValue) => setUserType(itemValue)}
+        style={styles.picker}
+      >
+        <Picker.Item label="Diagnosed" value="Diagnosed" />
+        <Picker.Item label="mental Health Profficnal" value="mentalHealthProf" />
+        <Picker.Item label="learning" value="learning" />
+        <Picker.Item label="other" value="other" />
+      </Picker>
+
       <TouchableOpacity style={styles.button} onPress={handleSignup} disabled={loading}>
         {loading ? (
           <ActivityIndicator color="white" />
@@ -68,12 +96,12 @@ const Signup = () => {
           <Text style={styles.buttonText}>Sign Up</Text>
         )}
       </TouchableOpacity>
-      
+
       <TouchableOpacity
-              style={[styles.button, styles.signinButton]}
-              onPress={() => router.push('/signin')}
-            >
-              <Text style={styles.buttonText}>Sign in</Text>
+        style={[styles.button, styles.signinButton]}
+        onPress={() => router.push('/signin')}
+      >
+        <Text style={styles.buttonText}>Sign in</Text>
       </TouchableOpacity>
     </View>
   );
@@ -81,8 +109,6 @@ const Signup = () => {
 
 export default Signup;
 
-
-//the style
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -98,6 +124,15 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   input: {
+    width: '100%',
+    padding: 15,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#bdc3c7',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+  },
+  picker: {
     width: '100%',
     padding: 15,
     marginBottom: 15,

@@ -2,7 +2,7 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router';
-import { Client, Account } from 'react-native-appwrite';
+import { Client, Account} from 'react-native-appwrite';
 import { useFocusEffect } from '@react-navigation/native';
 
 //connect to PPWRITE
@@ -23,8 +23,8 @@ const Profile = () => {
             const userData = await account.get();
             setUser(userData);
         } catch (error) {
-            //console.error("User not signed in:", error);
-            setUser(null); // Handle the case where the user is not logged in
+            
+            setUser(null); 
         }
     };
   
