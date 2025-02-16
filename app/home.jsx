@@ -11,6 +11,7 @@ const account = new Account(client);
 export default function App() {
     const [user, setUser] = useState(null);
 
+
     //get the user on page load
     useFocusEffect (() => {
         const fetchUser = async () => {
@@ -29,11 +30,11 @@ export default function App() {
     //view
     return (
         <View style={styles.container}>
-            <View style={styles.content}>
-                
-            </View>
+          <View style={styles.content}>
+            
+          </View>
         </View>
-    );
+      );
 }
 
 // Styles

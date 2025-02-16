@@ -8,6 +8,8 @@ const client = new Client();
 client.setEndpoint('https://cloud.appwrite.io/v1').setProject('675f19af00004a6f0bf8');
 const account = new Account(client);
 
+
+//root layer contains the header and the tabs 
 const RootLayout = () => {
   const [user, setUser] = useState(null);
   const router = useRouter();
@@ -69,6 +71,7 @@ const RootLayout = () => {
             tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
           }}
         />
+
         <Tabs.Screen
           name="Track"
           options={{
