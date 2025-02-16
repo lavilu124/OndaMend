@@ -67,6 +67,14 @@ const RootLayout = () => {
             tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
           }}
         />
+        <Tabs.Screen
+          name="Track"
+          options={{
+            tabBarIcon: ({ color, size }) => <Ionicons name="body" color={color} size={size} />,
+          }}
+        />
+
+        {/* invisable Tabs */}
         <Tabs.Screen name="signin" options={{ href: null }} />
         <Tabs.Screen name="signup" options={{ href: null }} />
         <Tabs.Screen name="profile" options={{ href: null }} />
