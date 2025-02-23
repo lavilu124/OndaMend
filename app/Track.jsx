@@ -1,5 +1,5 @@
 import React, {useState } from 'react';
-import {View } from 'react-native';
+import {View, StyleSheet } from 'react-native';
 import { Client, Account } from 'appwrite'; 
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -28,10 +28,29 @@ export default function Track() {
 
     //view
     return (
-        <View>
-            <View>
-                
+        <View style={styles.container}>
+            <View style={styles.content}>
+            
             </View>
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#FCF4F1',
+        paddingTop: 70,
+    },
+    content: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    title: {
+        fontSize: 32,
+        fontWeight: 'bold',
+        color: '#2c3e50',
+        marginBottom: 30,
+    },
+});

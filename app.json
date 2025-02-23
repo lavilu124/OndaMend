@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Lavie_Luria_Task",
-    "scheme": "Lavie_Luria_Task",
-    "slug": "Lavie_Luria_Task",
+    "name": "OndaMend",
+    "scheme": "OndaMend",
+    "slug": "OndaMend",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
