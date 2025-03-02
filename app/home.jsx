@@ -2,11 +2,18 @@ import React, {useState } from 'react';
 import {View, StyleSheet } from 'react-native';
 import { Client, Account } from 'appwrite'; 
 import { useFocusEffect } from '@react-navigation/native';
-
+import MapView from 'react-native-maps';
 
 const client = new Client();
 client.setEndpoint('https://cloud.appwrite.io/v1').setProject('675f19af00004a6f0bf8');
 const account = new Account(client);
+
+const ISREAL = {
+    latitude: 31.0461,
+    longitude: 34.8516,
+    latitudeDelta: 2,
+    longitudeDelta: 2,
+}
 
 export default function App() {
     const [user, setUser] = useState(null);
@@ -29,21 +36,15 @@ export default function App() {
 
     //view
     return (
-        <View style={styles.container}>
-          <View style={styles.content}>
-            
-          </View>
-        </View>
+        <MapView 
+            style={StyleSheet.absoluteFill}
+            initialRegion={ISREAL}
+             />
       );
 }
 
 // Styles
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        paddingTop: 70,
-    },
     content: {
         flex: 1,
         justifyContent: 'center',

@@ -94,7 +94,7 @@ const RootLayout = () => {
         />
 
         <Tabs.Screen
-          name="CalmSpace"
+          name="SafeSpace"
           options={{
             tabBarIcon: ({ color, size }) => <Ionicons name="heart" color={color} size={size} />,
           }}

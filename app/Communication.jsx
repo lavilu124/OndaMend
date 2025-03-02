@@ -35,7 +35,7 @@ const Communication = () => {
   return (
     
     <View style={styles.container}>
-      
+      <Text style={styles.title}>Communication</Text>
     </View>
   );
 };
@@ -49,5 +49,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     padding: 20,
+  },
+  title: {
+    position: 'absolute',
+    top: 20,  
+    left: 20, 
+    fontSize: 32, 
+    fontWeight: 'bold', 
   },
 });
