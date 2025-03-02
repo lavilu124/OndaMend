@@ -20,17 +20,18 @@ const DyInput = ({ placeholder, value, onChangeText, keyboardType}) => {
 //style
 const styles = StyleSheet.create({
   text: {
-    fontSize: 16,
+    fontSize: 10,
     fontWeight: '600',
   },
   input: {
     width: '100%',
-    padding: 15,
+    padding: 8,
     marginBottom: 15,
+    marginHorizontal: 8,
     borderWidth: 1,
-    borderColor: '#bdc3c7',
+    borderColor: '#000000',
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: '#bac0c7',
   }
 });
 

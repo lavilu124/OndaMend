@@ -1,8 +1,8 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import {Image, StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { Client, Account } from 'react-native-appwrite';
 import { useRouter } from 'expo-router';
-import DyInput from '../components/Input';
+
 
 // Create the client to connect to the auth
 const client = new Client()
@@ -33,7 +33,7 @@ const Signin = () => {
     try {
       const response = await account.createEmailPasswordSession(email, password); 
       console.log('Login successful:', response);
-      router.push('/home');
+      router.push('/Home');
     } catch (error) {
       Alert.alert('Login Failed', 'Invalid email or password.');
     } finally {
@@ -44,9 +44,16 @@ const Signin = () => {
   // The page
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Image source={require('../assets/clean.png')} style={styles.logo} />
+      <Image source={require('../assets/signinText.png')} style={styles.title} />
 
-      <DyInput placeholder={"Email"} value={email} onChangeText={setEmail} keyboardType={"email-address"}></DyInput>
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType='email-address'
+      />
 
       <TextInput
         style={styles.input}
@@ -64,12 +71,12 @@ const Signin = () => {
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[styles.button, styles.signupButton]}
-        onPress={() => router.push('/signup')}
-      >
-        <Text style={styles.buttonText}>Sign Up</Text>
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text>Don't have an account? </Text>
+        <TouchableOpacity onPress={() => router.push('/signup')}>
+          <Text style={styles.linkText}>Sign up here</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -82,17 +89,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ecf0f1',
+    backgroundColor: '#fff',
     padding: 20,
   },
+  logo: {
+    width: 100,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    resizeMode: 'contain',
+  },
   title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: 30,
+    width: 200,
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    resizeMode: 'contain',
   },
   input: {
-    width: '100%',
+    width: '80%',
+    padding: 5,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#000000',
+    borderRadius: 8,
+    backgroundColor: '#bac0c7',
+  },
+  picker: {
+    width: '80%',
+    height: '10%',
     padding: 15,
     marginBottom: 15,
     borderWidth: 1,
@@ -101,24 +126,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   button: {
-    width: '100%',
+    width: '80%',
     paddingVertical: 12,
     paddingHorizontal: 30,
-    backgroundColor: '#2ecc71',
+    backgroundColor: '#6699cc', 
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 10,
   },
-  signupButton: {
-    backgroundColor: '#3498db',
-    width: '50%',
-    paddingVertical: 6,
-    paddingHorizontal: 15,
-    borderRadius: 4,
-  },
   buttonText: {
-    color: 'white',
-    fontSize: 18,
+    color: '#ffffff', 
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  linkText: {
+    color: '#3498db',
+    fontSize: 16,
     fontWeight: '600',
   },
 });

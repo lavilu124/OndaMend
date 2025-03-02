@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import {Image, StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { Client, Account, Databases, ID } from 'react-native-appwrite';
 import { useRouter } from 'expo-router';
@@ -18,7 +18,8 @@ const collectionId = '67a8d6a5002264920113';
 
 const Signup = () => {
   // data needed to sign up
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [age, setAge] = useState(12);
@@ -28,24 +29,26 @@ const Signup = () => {
   const router = useRouter();
 
   const handleSignup = async () => {
-    if (!name || !email || !password || !age || !userType) {
+    if (!firstName || !lastName || !email || !password || !age || !userType) {
       Alert.alert('Error', 'Please fill in all fields.');
       return;
     }
 
+    const fullName = `${firstName} ${lastName}`;
+
     setLoading(true);
     try {
-      const user = await account.create(ID.unique(), email, password, name);
+      const user = await account.create(ID.unique(), email, password, fullName);
       await account.createEmailPasswordSession(email, password);
       await databases.createDocument(databaseId, collectionId, ID.unique(), {
         userId: user.$id,
-        name,
+        name: fullName,
         email,
         age,  
         userType,
       });
       Alert.alert('Success', 'Account created successfully!');
-      router.push('/home');
+      router.push('/Home');
     } catch (error) {
       Alert.alert('Signup Failed', error.message || 'An unknown error occurred');
     } finally {
@@ -56,10 +59,22 @@ const Signup = () => {
   // the page view
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
 
-      <DyInput placeholder={"Name"} value={name} onChangeText={setName}></DyInput>
-      <DyInput placeholder={"Email"} value={email} onChangeText={setEmail} keyboardType={"email-address"}></DyInput>
+      <Image source={require('../assets/clean.png')} style={styles.logo} />
+      <Image source={require('../assets/signupText.png')} style={styles.title} />
+
+      <View style={styles.nameContainer}>
+        <DyInput placeholder={"First Name"} value={firstName} onChangeText={setFirstName} style={styles.nameInput} />
+        <DyInput placeholder={"Last Name"} value={lastName} onChangeText={setLastName} style={styles.nameInput} />
+      </View>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType='email-address'
+      />
 
       <TextInput
         style={styles.input}
@@ -77,17 +92,18 @@ const Signup = () => {
         keyboardType="numeric"
       />
 
-      
-      <Picker
-        selectedValue={userType}
-        onValueChange={(itemValue) => setUserType(itemValue)}
-        style={styles.picker}
-      >
-        <Picker.Item label="Diagnosed" value="Diagnosed" />
-        <Picker.Item label="mental Health Profficnal" value="mentalHealthProf" />
-        <Picker.Item label="learning" value="learning" />
-        <Picker.Item label="other" value="other" />
-      </Picker>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={userType}
+          onValueChange={(itemValue) => setUserType(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Diagnosed" value="Diagnosed" />
+          <Picker.Item label="Mental Health Professional" value="mentalHealthProf" />
+          <Picker.Item label="Learning" value="learning" />
+          <Picker.Item label="Other" value="other" />
+        </Picker>
+      </View>
 
       <TouchableOpacity style={styles.button} onPress={handleSignup} disabled={loading}>
         {loading ? (
@@ -97,12 +113,14 @@ const Signup = () => {
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[styles.button, styles.signinButton]}
-        onPress={() => router.push('/signin')}
-      >
-        <Text style={styles.buttonText}>Sign in</Text>
-      </TouchableOpacity>
+
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text>Already have an account? </Text>
+        <TouchableOpacity onPress={() => router.push('/signin')}>
+          <Text style={styles.linkText}>Sign in here</Text>
+        </TouchableOpacity>
+      </View>
+
     </View>
   );
 };
@@ -114,52 +132,80 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#ecf0f1',
+    backgroundColor: '#fff',
     padding: 20,
   },
+  logo: {
+    width: 100,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    resizeMode: 'contain',
+  },
   title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: 30,
+    width: 200,
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    resizeMode: 'contain',
+  },
+  nameContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',  
+    width: '40%',  
+    marginBottom: 15,  
+  },
+  nameInput: {
+    flex: 1,
+    marginHorizontal: 10,
+    backgroundColor: '#bac0c7',
+    borderColor: '#000000', 
+    borderWidth: 1, 
+    padding: 6, 
+    borderRadius: 8, 
   },
   input: {
-    width: '100%',
-    padding: 15,
+    width: '80%',
+    padding: 5,
     marginBottom: 15,
     borderWidth: 1,
-    borderColor: '#bdc3c7',
+    borderColor: '#000000',
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: '#bac0c7',
+  },
+  pickerContainer: {
+    width: '80%',
+    height: 55, 
+    borderRadius: 8,
+    borderColor: '#000000',
+    borderWidth: 1,
+    overflow: 'hidden', 
+    backgroundColor: '#bac0c7',
+    marginBottom: 10,
   },
   picker: {
     width: '100%',
-    padding: 15,
-    marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#bdc3c7',
-    borderRadius: 8,
-    backgroundColor: '#fff',
+    height: '100%',
+    padding: 4,
   },
   button: {
-    width: '100%',
+    width: '80%',
     paddingVertical: 12,
     paddingHorizontal: 30,
-    backgroundColor: '#2ecc71',
+    backgroundColor: '#6699cc',
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 10,
   },
-  signinButton: {
-    backgroundColor: '#3498db',
-    width: '50%',
-    paddingVertical: 6,
-    paddingHorizontal: 15,
-    borderRadius: 4,
-  },
   buttonText: {
-    color: 'white',
-    fontSize: 18,
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  linkText: {
+    color: '#3498db',
+    fontSize: 16,
     fontWeight: '600',
   },
 });
+

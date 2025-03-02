@@ -32,7 +32,7 @@ const RootLayout = () => {
 
   // Redirect to home on initial load
   useEffect(() => {
-    router.push('/home');
+    router.push('/Home');
   }, []);
 
   // Handle profile navigation
@@ -66,7 +66,7 @@ const RootLayout = () => {
         }}
       >
         <Tabs.Screen
-          name="home"
+          name="Home"
           options={{
             tabBarIcon: ({ color, size }) => <Ionicons name="home" color={color} size={size} />,
           }}
@@ -76,6 +76,27 @@ const RootLayout = () => {
           name="Track"
           options={{
             tabBarIcon: ({ color, size }) => <Ionicons name="body" color={color} size={size} />,
+          }}
+        />
+
+        <Tabs.Screen
+          name="Communication"
+          options={{
+            tabBarIcon: ({ color, size }) => <Ionicons name="chatbox" color={color} size={size} />,
+          }}
+        />
+
+        <Tabs.Screen
+          name="Education"
+          options={{
+            tabBarIcon: ({ color, size }) => <Ionicons name="book" color={color} size={size} />,
+          }}
+        />
+
+        <Tabs.Screen
+          name="CalmSpace"
+          options={{
+            tabBarIcon: ({ color, size }) => <Ionicons name="heart" color={color} size={size} />,
           }}
         />
 
