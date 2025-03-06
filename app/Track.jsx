@@ -1,6 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { Client, Account, Databases, ID } from 'react-native-appwrite';
+import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
+
+// client of auth
+const client = new Client()
+  .setProject('675f19af00004a6f0bf8') 
+  .setEndpoint('https://cloud.appwrite.io/v1'); 
+
+// account of the current user
+const account = new Account(client);
+const databases = new Databases(client);
+const databaseId = '679f922800130bce0002';
+const collectionId = '67c9fbdf000f28b47fa8';
 
 export default function Track() {
     const [ratings, setRatings] = useState({
@@ -9,14 +23,64 @@ export default function Track() {
         eating: 1,
         activity: 1,
     });
+    const [userId, setUserId] = useState(null);
+    const router = useRouter();
+
+    useFocusEffect(() => {
+        const getUser = async () => {
+            try {
+                const user = await account.get();
+                setUserId(user.$id);
+            } catch (error) {
+                setUserId(null);
+            }
+        };
+        getUser();
+    }, []);
 
     const handleRating = (category, value) => {
         setRatings({ ...ratings, [category]: value });
     };
 
+    const uploadFeedback = async () => {
+        if (!userId) {
+            alert('User not logged in');
+            return;
+        }
+
+        const today = new Date().toISOString().split('T')[0];
+
+        try {
+            const response = await databases.createDocument(
+                databaseId,
+                collectionId,
+                ID.unique(),
+                {
+                    userId: userId,
+                    mood: ratings.mood,
+                    sleep: ratings.sleep,
+                    eating: ratings.eating,
+                    activity: ratings.activity,
+                    date: today,
+                }
+            );
+            console.log('Feedback uploaded successfully:', response);
+            alert('Feedback saved successfully!');
+        } catch (error) {
+            console.error('Error uploading feedback:', error);
+            alert('Failed to save feedback. Please try again.');
+        }
+    };
+
+    const goSignIn = () => {
+        router.push('/signin');
+    }
+
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Personal Tracker</Text>
+            {userId? 
+            (<>
+                <Text style={styles.title}>Personal Tracker</Text>
             <Text style={styles.subtitle}>Keep track of your day</Text>
             
             <ScrollView>
@@ -45,10 +109,19 @@ export default function Track() {
                     </View>
                 ))}
                 
-                <TouchableOpacity style={styles.saveButton}>
-                    <Text style={styles.saveText}>FeedBack</Text>
+                <TouchableOpacity style={styles.saveButton} onPress={uploadFeedback}>
+                    <Text style={styles.saveText}>Submit Feedback</Text>
                 </TouchableOpacity>
             </ScrollView>
+            </>) 
+            : 
+            (<>
+                <Text style={styles.title}>User not signed in</Text>
+                <Text style={styles.subtitle}>Please sign in to use this feature</Text>
+                <TouchableOpacity style={styles.saveButton} onPress={goSignIn}>
+                    <Text style={styles.saveText}>Go to sign in</Text>
+                </TouchableOpacity>
+            </>)}
         </View>
     );
 }
