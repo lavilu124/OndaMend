@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 20,
-    backgroundColor: '#3498db',
+    backgroundColor: '#BAC0C7',
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
     elevation: 5,
@@ -125,7 +125,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
-    backgroundColor: '#F9E8D9',
   },
   logo: {
     width: 100,

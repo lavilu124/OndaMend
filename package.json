@@ -9,7 +9,9 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@arcgis/map-components": "^4.32.7",
     "@expo/vector-icons": "^14.0.2",
+    "@react-native-community/geolocation": "^3.4.0",
     "@react-native-picker/picker": "^2.11.0",
     "appwrite": "^16.1.0",
     "babel": "^5.8.38",
@@ -20,8 +22,10 @@
     "react": "18.3.1",
     "react-native": "0.76.5",
     "react-native-appwrite": "^0.5.0",
+    "react-native-geolocation-service": "^5.3.1",
+    "react-native-maps": "1.18.0",
     "react-native-url-polyfill": "^2.0.0",
-    "react-native-maps": "1.18.0"
+    "react-native-webview": "^13.13.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
