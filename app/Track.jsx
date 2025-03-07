@@ -64,10 +64,9 @@ export default function Track() {
                     date: today,
                 }
             );
-            console.log('Feedback uploaded successfully:', response);
-            alert('Feedback saved successfully!');
+            router.push('/TrackCalander');
+
         } catch (error) {
-            console.error('Error uploading feedback:', error);
             alert('Failed to save feedback. Please try again.');
         }
     };

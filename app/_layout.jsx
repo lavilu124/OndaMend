@@ -104,6 +104,7 @@ const RootLayout = () => {
         <Tabs.Screen name="signin" options={{ href: null }} />
         <Tabs.Screen name="signup" options={{ href: null }} />
         <Tabs.Screen name="profile" options={{ href: null }} />
+        <Tabs.Screen name="TrackCalander" options={{ href: null }} />
       </Tabs>
     </>
   );
