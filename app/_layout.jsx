@@ -105,6 +105,9 @@ const RootLayout = () => {
         <Tabs.Screen name="signup" options={{ href: null }} />
         <Tabs.Screen name="profile" options={{ href: null }} />
         <Tabs.Screen name="TrackCalander" options={{ href: null }} />
+        <Tabs.Screen name="Chat" options={{ href: null }} />
+        <Tabs.Screen name="ChatSelection" options={{ href: null }} />
+        <Tabs.Screen name="Professional" options={{ href: null }} />
       </Tabs>
     </>
   );

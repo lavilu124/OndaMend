@@ -1,5 +1,6 @@
-import { StyleSheet, Text, View, FlatList } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { Client, Account, Databases, Query } from 'react-native-appwrite';
 
 // Initialize Appwrite Client
@@ -12,109 +13,131 @@ const databases = new Databases(client);
 const databaseId = '679f922800130bce0002';
 const collectionId = '67c9fbdf000f28b47fa8';
 
-const TrackCalander = () => {
+const TrackCalendar = () => {
   const [userId, setUserId] = useState(null);
   const [weeklyData, setWeeklyData] = useState([]);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await account.get();
-        setUserId(userData.$id);
-      } catch (error) {
-        setUserId(null);
-      }
-    };
-  
-    fetchUser();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true; 
 
-  useEffect(() => {
-    if (userId) {
-      fetchWeeklyReport();
-    }
-  }, [userId]);
+      const fetchUser = async () => {
+        try {
+          const userData = await account.get();
+          if (isActive) {
+            setUserId(userData.$id);
+          }
+        } catch (error) {
+          if (isActive) {
+            setUserId(null);
+          }
+        }
+      };
 
-  const fetchWeeklyReport = async () => {
+      const fetchWeeklyReport = async (userId) => {
+        if (!userId) return;
+
+        const today = new Date();
+        const pastWeek = new Date();
+        pastWeek.setDate(today.getDate() - 6);
+
+        try {
+          const response = await databases.listDocuments(databaseId, collectionId, [
+            Query.equal('userId', userId),
+            Query.greaterThanEqual('date', pastWeek.toISOString().split('T')[0]),
+            Query.lessThanEqual('date', today.toISOString().split('T')[0]),
+            Query.orderAsc('date'),
+          ]);
+
+          if (isActive) {
+            setWeeklyData(formatData(response.documents));
+          }
+        } catch (error) {
+          console.error('Failed to fetch weekly data:', error);
+        }
+      };
+
+      fetchUser().then(() => {
+        if (userId) {
+          fetchWeeklyReport(userId);
+        }
+      });
+
+      return () => {
+        isActive = false; // Cleanup function to prevent state updates if unmounted
+      };
+    }, [userId])
+  );
+
+  const formatData = (data) => {
     const today = new Date();
     const pastWeek = new Date();
-    pastWeek.setDate(today.getDate() - 6); 
+    pastWeek.setDate(today.getDate() - 6);
 
-    try {
-      const response = await databases.listDocuments(databaseId, collectionId, [
-        Query.equal('userId', userId),
-        Query.greaterThanEqual('date', pastWeek.toISOString().split('T')[0]),
-        Query.lessThanEqual('date', today.toISOString().split('T')[0]),
-        Query.orderDesc('date'),
-      ]);
-
-      setWeeklyData(response.documents);
-    } catch (error) {
-      console.error('Failed to fetch weekly data:', error);
+    let weekMap = {};
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(pastWeek);
+      date.setDate(pastWeek.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
+      weekMap[dateStr] = {
+        mood: '-',
+        sleep: '-',
+        eating: '-',
+        activity: '-',
+        date: dateStr,
+      };
     }
-  };
 
-  const calculateAverages = () => {
-    if (weeklyData.length === 0) return null;
-
-    const total = { mood: 0, sleep: 0, eating: 0, activity: 0 };
-    weeklyData.forEach((entry) => {
-      total.mood += entry.mood;
-      total.sleep += entry.sleep;
-      total.eating += entry.eating;
-      total.activity += entry.activity;
+    data.forEach((entry) => {
+      if (weekMap[entry.date]) {
+        weekMap[entry.date] = {
+          mood: entry.mood,
+          sleep: entry.sleep,
+          eating: entry.eating,
+          activity: entry.activity,
+          date: entry.date,
+        };
+      }
     });
 
-    return {
-      mood: (total.mood / weeklyData.length).toFixed(1),
-      sleep: (total.sleep / weeklyData.length).toFixed(1),
-      eating: (total.eating / weeklyData.length).toFixed(1),
-      activity: (total.activity / weeklyData.length).toFixed(1),
-    };
+    return Object.values(weekMap);
   };
 
-  const averages = calculateAverages();
+  const getDayName = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { weekday: 'short' });
+  };
+
+  const todayDate = new Date().toISOString().split('T')[0];
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Weekly Report</Text>
-      
-      {weeklyData.length > 0 ? (
-        <>
-          <FlatList
-            data={weeklyData}
-            keyExtractor={(item) => item.$id}
-            renderItem={({ item }) => (
-              <View style={styles.entry}>
-                <Text style={styles.entryDate}>{item.date}</Text>
-                <Text>Mood: {item.mood}</Text>
-                <Text>Sleep: {item.sleep}</Text>
-                <Text>Eating: {item.eating}</Text>
-                <Text>Activity: {item.activity}</Text>
-              </View>
-            )}
-          />
-          
-          <View style={styles.averagesContainer}>
-            <Text style={styles.averageTitle}>Weekly Averages</Text>
-            {averages && (
-              <>
-                <Text>Mood: {averages.mood}</Text>
-                <Text>Sleep: {averages.sleep}</Text>
-                <Text>Eating: {averages.eating}</Text>
-                <Text>Activity: {averages.activity}</Text>
-              </>
-            )}
+      <Text style={styles.title}>Weekly Tracker</Text>
+
+      <View style={styles.calendar}>
+        <View style={styles.row}>
+          <Text style={styles.headerCell}>Day</Text>
+          <Text style={styles.headerCell}>Mood</Text>
+          <Text style={styles.headerCell}>Sleep</Text>
+          <Text style={styles.headerCell}>Eating</Text>
+          <Text style={styles.headerCell}>Activity</Text>
+        </View>
+
+        {weeklyData.map((day) => (
+          <View key={day.date} style={[styles.row, day.date === todayDate && styles.todayRow]}>
+            <Text style={[styles.cell, styles.dayCell]}>{getDayName(day.date)}</Text>
+            <Text style={styles.cell}>{day.mood}</Text>
+            <Text style={styles.cell}>{day.sleep}</Text>
+            <Text style={styles.cell}>{day.eating}</Text>
+            <Text style={styles.cell}>{day.activity}</Text>
           </View>
-        </>
-      ) : (
-        <Text style={styles.noDataText}>No data available for the past week.</Text>
-      )}
+        ))}
+      </View>
     </View>
   );
 };
 
-export default TrackCalander;
+export default TrackCalendar;
 
 const styles = StyleSheet.create({
   container: {
@@ -125,32 +148,39 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 20,
     textAlign: 'center',
   },
-  entry: {
-    backgroundColor: '#f2f2f2',
-    padding: 10,
+  calendar: {
+    borderWidth: 1,
+    borderColor: '#ccc',
     borderRadius: 10,
-    marginBottom: 10,
+    overflow: 'hidden',
   },
-  entryDate: {
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderColor: '#ccc',
+    paddingVertical: 10,
+  },
+  todayRow: {
+    backgroundColor: '#e3f2fd',
+  },
+  headerCell: {
+    flex: 1,
     fontWeight: 'bold',
-  },
-  averagesContainer: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: '#dfe6e9',
-    borderRadius: 10,
-  },
-  averageTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  noDataText: {
     textAlign: 'center',
-    color: '#777',
-    marginTop: 20,
+    backgroundColor: '#4A90E2',
+    color: '#fff',
+    paddingVertical: 10,
+  },
+  cell: {
+    flex: 1,
+    textAlign: 'center',
+    paddingVertical: 10,
+  },
+  dayCell: {
+    fontWeight: 'bold',
   },
 });

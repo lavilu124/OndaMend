@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Client, Account, Databases, ID } from 'react-native-appwrite';
@@ -36,7 +36,7 @@ export default function Track() {
             }
         };
         getUser();
-    }, []);
+    });
 
     const handleRating = (category, value) => {
         setRatings({ ...ratings, [category]: value });
